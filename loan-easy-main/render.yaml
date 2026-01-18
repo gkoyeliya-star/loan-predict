@@ -11,5 +11,9 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
-    buildCommand: "bash build.sh"
-    startCommand: "gunicorn --workers 4 --bind 0.0.0.0:$PORT wsgi:application"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: FLASK_ENV
+        value: production
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn wsgi:app"

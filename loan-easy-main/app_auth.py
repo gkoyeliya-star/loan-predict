@@ -7,11 +7,15 @@ import joblib
 import numpy as np
 import os
 import json
+import secrets
 from functools import wraps
 from pathlib import Path
 
 # Get the base directory
 BASE_DIR = Path(__file__).resolve().parent
+INSTANCE_DIR = BASE_DIR / 'instance'
+INSTANCE_DIR.mkdir(exist_ok=True)
+DATABASE_PATH = INSTANCE_DIR / 'loaneasy.db'
 
 # Import verification service
 from verification_service import VerificationService
@@ -21,8 +25,8 @@ app = Flask(__name__,
             template_folder=str(BASE_DIR / 'templates'),
             static_folder=str(BASE_DIR / 'static'))
             
-app.config['SECRET_KEY'] = 'loaneasy-secret-key-2025-secure'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///loaneasy.db'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or secrets.token_urlsafe(32)
+app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{DATABASE_PATH}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -215,7 +219,7 @@ def index():
             return redirect(url_for('dashboard'))
         return render_template('landing.html')
     except Exception as e:
-        return f"Error loading page: {str(e)}<br>Check Vercel logs for details.", 500
+        return f"Error loading page: {str(e)}<br>Check server logs for details.", 500
 
 @app.route('/health')
 def health():
@@ -770,11 +774,12 @@ def init_app():
         print(f"✗ Database initialization error: {e}")
         # Don't crash - let app start anyway
 
+# Initialize database on startup (e.g., Gunicorn)
+init_app()
+
 # ============ RUN APPLICATION ============
 
 if __name__ == '__main__':
-    # Initialize database for local development
-    init_app()
     print("\n" + "="*60)
     print("🏦 LOAN EASY - Professional Banking Application")
     print("="*60)
