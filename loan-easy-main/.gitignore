@@ -57,3 +57,34 @@ real_data/
 *.tmp
 *.bak
 .vercel
+# Old backup files
+*_old_backup.*
+*_OLD_BACKUP.*
+
+# Database files (no longer used)
+instance/
+*.db
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Training data (large file)
+synthetic_loan_data.csv
+
+# Old documentation
+*.md~
