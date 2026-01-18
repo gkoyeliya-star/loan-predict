@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-header {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .profile-header h1 {
+        color: #333;
+    }
+
+    .profile-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
+    }
+
+    .profile-section {
+        padding: 2rem;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .profile-section:last-child {
+        border-bottom: none;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+        color: #333;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #0066cc;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .profile-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .profile-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .profile-label {
+        font-size: 0.85rem;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .profile-value {
+        font-size: 1rem;
+        color: #333;
+        font-weight: 500;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .status-verified {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-header">
+    <div>
+        <h1><i class="fas fa-user-circle"></i> My Profile</h1>
+        <p style="color: #666; margin-top: 0.5rem;">View and manage your profile information</p>
+    </div>
+    <a href="{{ url_for('edit_profile') }}" class="btn btn-primary">
+        <i class="fas fa-edit"></i> Edit Profile
+    </a>
+</div>
+
+<div class="profile-card">
+    <!-- Personal Information -->
+    <div class="profile-section">
+        <div class="section-title">
+            <i class="fas fa-user"></i>
+            Personal Information
+        </div>
+        <div class="profile-grid">
+            <div class="profile-item">
+                <div class="profile-label">Full Name</div>
+                <div class="profile-value">{{ current_user.full_name }}</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">Email</div>
+                <div class="profile-value">{{ current_user.email }}</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">Phone Number</div>
+                <div class="profile-value">{{ current_user.phone }}</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">PAN Card</div>
+                <div class="profile-value">{{ profile.pan_card or 'Not provided' }}</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">Aadhar Number</div>
+                <div class="profile-value">{{ profile.aadhar_number or 'Not provided' }}</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">Date of Birth</div>
+                <div class="profile-value">{{ profile.date_of_birth.strftime('%d %b %Y') if profile.date_of_birth else 'Not provided' }}</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">Gender</div>
+                <div class="profile-value">{{ profile.gender or 'Not provided' }}</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">Marital Status</div>
+                <div class="profile-value">{{ profile.marital_status or 'Not provided' }}</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">Number of Dependents</div>
+                <div class="profile-value">{{ profile.no_of_dependents }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Address -->
+    <div class="profile-section">
+        <div class="section-title">
+            <i class="fas fa-map-marker-alt"></i>
+            Address
+        </div>
+        <div class="profile-grid">
+            <div class="profile-item" style="grid-column: 1 / -1;">
+                <div class="profile-label">Address</div>
+                <div class="profile-value">
+                    {{ profile.address_line1 }}<br>
+                    {% if profile.address_line2 %}{{ profile.address_line2 }}<br>{% endif %}
+                    {{ profile.city }}, {{ profile.state }} - {{ profile.pincode }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Employment Details -->
+    <div class="profile-section">
+        <div class="section-title">
+            <i class="fas fa-briefcase"></i>
+            Employment Details
+        </div>
+        <div class="profile-grid">
+            <div class="profile-item">
+                <div class="profile-label">Education</div>
+                <div class="profile-value">{{ profile.education }}</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">Employment Type</div>
+                <div class="profile-value">{{ profile.employment_type }}</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">Employer Name</div>
+                <div class="profile-value">{{ profile.employer_name or 'Not provided' }}</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">Designation</div>
+                <div class="profile-value">{{ profile.designation or 'Not provided' }}</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">Years Employed</div>
+                <div class="profile-value">{{ profile.years_employed }} years</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">Annual Income</div>
+                <div class="profile-value">₹ {{ "{:,.0f}".format(profile.income_annum) }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bank Details -->
+    <div class="profile-section">
+        <div class="section-title">
+            <i class="fas fa-university"></i>
+            Bank Details
+        </div>
+        <div class="profile-grid">
+            <div class="profile-item">
+                <div class="profile-label">Bank Name</div>
+                <div class="profile-value">{{ profile.bank_name }}</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">Account Number</div>
+                <div class="profile-value">XXXX-XXXX-{{ profile.account_number[-4:] if profile.account_number else 'XXXX' }}</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">IFSC Code</div>
+                <div class="profile-value">{{ profile.ifsc_code }}</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">Account Type</div>
+                <div class="profile-value">{{ profile.account_type }}</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">Bank Balance</div>
+                <div class="profile-value">₹ {{ "{:,.0f}".format(profile.bank_asset_value) }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Credit Information -->
+    <div class="profile-section">
+        <div class="section-title">
+            <i class="fas fa-chart-line"></i>
+            Credit Information
+        </div>
+        <div class="profile-grid">
+            <div class="profile-item">
+                <div class="profile-label">CIBIL Score</div>
+                <div class="profile-value" style="font-size: 1.5rem; color: {% if profile.cibil_score >= 750 %}#155724{% elif profile.cibil_score >= 650 %}#856404{% else %}#721c24{% endif %}">
+                    {{ profile.cibil_score }}
+                </div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">Existing Loans</div>
+                <div class="profile-value">{{ profile.existing_loans }}</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">Existing EMI</div>
+                <div class="profile-value">₹ {{ "{:,.0f}".format(profile.existing_emi) }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assets -->
+    <div class="profile-section">
+        <div class="section-title">
+            <i class="fas fa-home"></i>
+            Assets & Collateral
+        </div>
+        <div class="profile-grid">
+            <div class="profile-item">
+                <div class="profile-label">Residential Property</div>
+                <div class="profile-value">₹ {{ "{:,.0f}".format(profile.residential_assets_value) }}</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">Commercial Property</div>
+                <div class="profile-value">₹ {{ "{:,.0f}".format(profile.commercial_assets_value) }}</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">Luxury Assets</div>
+                <div class="profile-value">₹ {{ "{:,.0f}".format(profile.luxury_assets_value) }}</div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label"><strong>Total Collateral Value</strong></div>
+                <div class="profile-value" style="font-size: 1.5rem; color: #0066cc;">
+                    ₹ {{ "{:,.0f}".format(profile.total_collateral()) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Status -->
+    <div class="profile-section">
+        <div class="section-title">
+            <i class="fas fa-check-circle"></i>
+            Profile Status
+        </div>
+        <div class="profile-grid">
+            <div class="profile-item">
+                <div class="profile-label">Profile Status</div>
+                <div class="profile-value">
+                    {% if profile.profile_completed %}
+                        <span class="status-badge status-verified">
+                            <i class="fas fa-check-circle"></i> Complete
+                        </span>
+                    {% else %}
+                        <span class="status-badge status-pending">
+                            <i class="fas fa-exclamation-circle"></i> Incomplete
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="profile-item">
+                <div class="profile-label">Verification Status</div>
+                <div class="profile-value">
+                    {% if profile.profile_verified %}
+                        <span class="status-badge status-verified">
+                            <i class="fas fa-check-circle"></i> Verified
+                        </span>
+                    {% else %}
+                        <span class="status-badge status-pending">
+                            <i class="fas fa-clock"></i> Pending Verification
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

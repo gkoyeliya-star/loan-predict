@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Loan Approval Prediction</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .section p, .section ul {
+            color: #555;
+            line-height: 1.8;
+            font-size: 1.05em;
+        }
+
+        .section ul {
+            margin-left: 20px;
+        }
+
+        .section li {
+            margin-bottom: 10px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 About This Application</h1>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2>What is Loan Approval Prediction?</h2>
+                <p>
+                    This application uses machine learning to predict whether a loan application 
+                    will be approved or rejected based on various applicant features such as income, 
+                    credit history, education, and more.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>How It Works</h2>
+                <ul>
+                    <li><strong>Data Collection:</strong> We gather loan application data including income, credit score, education, etc.</li>
+                    <li><strong>Data Preprocessing:</strong> Clean and encode categorical variables for machine learning</li>
+                    <li><strong>Model Training:</strong> Train multiple classification models (Decision Tree, SVM, Random Forest)</li>
+                    <li><strong>Validation:</strong> Test models on unseen data and select the best performer</li>
+                    <li><strong>Prediction:</strong> Use the trained model to predict loan approval for new applications</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>Machine Learning Models Used</h2>
+                <ul>
+                    <li><strong>Decision Trees:</strong> Makes decisions based on feature values in a tree structure</li>
+                    <li><strong>Support Vector Machines (SVM):</strong> Finds optimal decision boundaries between classes</li>
+                    <li><strong>Random Forest:</strong> Ensemble of decision trees for improved accuracy</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>Key Features Analyzed</h2>
+                <ul>
+                    <li>Applicant and Co-applicant Income</li>
+                    <li>Loan Amount and Term</li>
+                    <li>Credit History (Most Important Factor)</li>
+                    <li>Education Level</li>
+                    <li>Employment Status</li>
+                    <li>Property Area</li>
+                    <li>Marital Status and Dependents</li>
+                </ul>
+            </div>
+
+            <a href="/" class="back-btn">← Back to Predictor</a>
+        </div>
+    </div>
+</body>
+</html>

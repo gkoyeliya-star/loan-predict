@@ -1,0 +1,16 @@
+Best Model: Gradient Boosting
+Accuracy: 0.9848
+CV Score: 0.9833
+
+Features used:
+  - no_of_dependents
+  - education
+  - self_employed
+  - income_annum
+  - loan_amount
+  - loan_term
+  - cibil_score
+  - residential_assets_value
+  - commercial_assets_value
+  - luxury_assets_value
+  - bank_asset_value

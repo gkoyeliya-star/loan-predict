@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: loan-easy
+    runtime: python
+    region: ohio
+    plan: free
+    branch: main
+    buildFilter:
+      paths:
+      - "/**"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+    buildCommand: "bash build.sh"
+    startCommand: "gunicorn --workers 4 --bind 0.0.0.0:$PORT wsgi:application"

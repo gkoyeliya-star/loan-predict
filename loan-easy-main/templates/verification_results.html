@@ -1,0 +1,380 @@
+{% extends "base.html" %}
+
+{% block title %}Verification Results{% endblock %}
+
+{% block extra_css %}
+<style>
+    .verification-header {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        text-align: center;
+    }
+
+    .overall-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-top: 1rem;
+    }
+
+    .status-verified {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-partial {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-failed {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .verification-score {
+        font-size: 3rem;
+        font-weight: 700;
+        margin: 1rem 0;
+    }
+
+    .verification-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .verification-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .verification-card-header {
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .verification-card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .status-badge {
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .badge-success {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .badge-warning {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .badge-danger {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .verification-card-body {
+        padding: 1.5rem;
+    }
+
+    .verification-detail {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .verification-detail:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .detail-value {
+        color: #333;
+        font-weight: 500;
+    }
+
+    .info-box {
+        background: #e3f2fd;
+        border-left: 4px solid #2196F3;
+        padding: 1.5rem;
+        border-radius: 4px;
+        margin-bottom: 2rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="verification-header">
+    <h1><i class="fas fa-shield-alt"></i> Profile Verification Results</h1>
+    <p style="color: #666; margin-top: 0.5rem;">Your profile has been verified with government and financial institutions</p>
+    
+    {% if verification_report %}
+        <div class="overall-status status-{{ 'verified' if verification_report.overall_status == 'Verified' else ('partial' if verification_report.overall_status == 'Partially Verified' else 'failed') }}">
+            <i class="fas fa-{{ 'check-circle' if verification_report.overall_status == 'Verified' else ('exclamation-triangle' if verification_report.overall_status == 'Partially Verified' else 'times-circle') }}"></i>
+            {{ verification_report.overall_status }}
+        </div>
+        
+        <div class="verification-score" style="color: {{ '#155724' if verification_report.verification_score >= 80 else ('#856404' if verification_report.verification_score >= 60 else '#721c24') }}">
+            {{ verification_report.verification_score }}%
+        </div>
+        <p style="color: #666;">
+            {{ verification_report.checks_passed }} of {{ verification_report.total_checks }} checks passed
+        </p>
+        <p style="color: #999; font-size: 0.85rem; margin-top: 1rem;">
+            Last verified: {{ verification_report.verification_date }}
+        </p>
+    {% endif %}
+</div>
+
+{% if not verification_report %}
+<div class="info-box">
+    <h3 style="color: #1976D2; margin-bottom: 0.5rem;"><i class="fas fa-info-circle"></i> No Verification Data</h3>
+    <p style="color: #424242;">Your profile hasn't been verified yet. Verification runs automatically when you create or update your profile.</p>
+</div>
+{% else %}
+
+<div class="info-box">
+    <h3 style="color: #1976D2; margin-bottom: 0.5rem;"><i class="fas fa-info-circle"></i> About Verification</h3>
+    <p style="color: #424242; line-height: 1.6;">
+        We verify your information with multiple sources including Income Tax Department (PAN), UIDAI (Aadhar), 
+        Banks (Account Verification), and Credit Bureaus (CIBIL). This ensures the accuracy of your profile and 
+        helps us provide better loan decisions. 
+        <br><br>
+        <strong>Note:</strong> Current verification is simulated for demo purposes. In production, this connects to actual government and banking APIs.
+    </p>
+</div>
+
+<h2 style="margin-bottom: 1.5rem; color: #333;"><i class="fas fa-clipboard-check"></i> Detailed Verification Report</h2>
+
+<div class="verification-grid">
+    {% if 'pan' in verification_report.verifications %}
+    <div class="verification-card">
+        <div class="verification-card-header">
+            <div class="verification-card-title">
+                <i class="fas fa-id-card"></i>
+                PAN Card Verification
+            </div>
+            <span class="status-badge badge-{{ 'success' if verification_report.verifications.pan.verified else 'danger' }}">
+                {{ 'Verified' if verification_report.verifications.pan.verified else 'Failed' }}
+            </span>
+        </div>
+        <div class="verification-card-body">
+            <div class="verification-detail">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value">{{ verification_report.verifications.pan.message }}</span>
+            </div>
+            {% if verification_report.verifications.pan.details %}
+                <div class="verification-detail">
+                    <span class="detail-label">Registered Name:</span>
+                    <span class="detail-value">{{ verification_report.verifications.pan.details.registered_name }}</span>
+                </div>
+                <div class="verification-detail">
+                    <span class="detail-label">PAN Status:</span>
+                    <span class="detail-value">{{ verification_report.verifications.pan.details.status }}</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if 'aadhar' in verification_report.verifications %}
+    <div class="verification-card">
+        <div class="verification-card-header">
+            <div class="verification-card-title">
+                <i class="fas fa-fingerprint"></i>
+                Aadhar Verification
+            </div>
+            <span class="status-badge badge-{{ 'success' if verification_report.verifications.aadhar.verified else 'danger' }}">
+                {{ 'Verified' if verification_report.verifications.aadhar.verified else 'Failed' }}
+            </span>
+        </div>
+        <div class="verification-card-body">
+            <div class="verification-detail">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value">{{ verification_report.verifications.aadhar.message }}</span>
+            </div>
+            {% if verification_report.verifications.aadhar.details %}
+                <div class="verification-detail">
+                    <span class="detail-label">Name Match:</span>
+                    <span class="detail-value">{{ verification_report.verifications.aadhar.details.name_match }}</span>
+                </div>
+                <div class="verification-detail">
+                    <span class="detail-label">Address Available:</span>
+                    <span class="detail-value">{{ 'Yes' if verification_report.verifications.aadhar.details.address_available else 'No' }}</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if 'bank_account' in verification_report.verifications %}
+    <div class="verification-card">
+        <div class="verification-card-header">
+            <div class="verification-card-title">
+                <i class="fas fa-university"></i>
+                Bank Account Verification
+            </div>
+            <span class="status-badge badge-{{ 'success' if verification_report.verifications.bank_account.verified else 'danger' }}">
+                {{ 'Verified' if verification_report.verifications.bank_account.verified else 'Failed' }}
+            </span>
+        </div>
+        <div class="verification-card-body">
+            <div class="verification-detail">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value">{{ verification_report.verifications.bank_account.message }}</span>
+            </div>
+            {% if verification_report.verifications.bank_account.details %}
+                <div class="verification-detail">
+                    <span class="detail-label">Bank Name:</span>
+                    <span class="detail-value">{{ verification_report.verifications.bank_account.details.bank_name }}</span>
+                </div>
+                <div class="verification-detail">
+                    <span class="detail-label">Account Status:</span>
+                    <span class="detail-value">{{ 'Active' if verification_report.verifications.bank_account.details.account_active else 'Inactive' }}</span>
+                </div>
+                <div class="verification-detail">
+                    <span class="detail-label">Name Match:</span>
+                    <span class="detail-value">{{ verification_report.verifications.bank_account.details.name_match_score }}%</span>
+                </div>
+                <div class="verification-detail">
+                    <span class="detail-label">Verification Method:</span>
+                    <span class="detail-value" style="font-size: 0.85rem;">{{ verification_report.verifications.bank_account.details.verification_method }}</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if 'cibil' in verification_report.verifications %}
+    <div class="verification-card">
+        <div class="verification-card-header">
+            <div class="verification-card-title">
+                <i class="fas fa-chart-line"></i>
+                CIBIL Score Verification
+            </div>
+            <span class="status-badge badge-{{ 'success' if verification_report.verifications.cibil.verified else 'warning' }}">
+                {{ 'Verified' if verification_report.verifications.cibil.verified else 'Variance Detected' }}
+            </span>
+        </div>
+        <div class="verification-card-body">
+            <div class="verification-detail">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value">{{ verification_report.verifications.cibil.message }}</span>
+            </div>
+            {% if verification_report.verifications.cibil.details %}
+                <div class="verification-detail">
+                    <span class="detail-label">Reported Score:</span>
+                    <span class="detail-value">{{ verification_report.verifications.cibil.details.reported_score }}</span>
+                </div>
+                <div class="verification-detail">
+                    <span class="detail-label">Actual Score:</span>
+                    <span class="detail-value" style="font-size: 1.3rem; color: {{ '#155724' if verification_report.verifications.cibil.details.actual_score >= 750 else ('#856404' if verification_report.verifications.cibil.details.actual_score >= 650 else '#721c24') }}">
+                        {{ verification_report.verifications.cibil.details.actual_score }}
+                    </span>
+                </div>
+                <div class="verification-detail">
+                    <span class="detail-label">Credit Accounts:</span>
+                    <span class="detail-value">{{ verification_report.verifications.cibil.details.credit_accounts }}</span>
+                </div>
+                <div class="verification-detail">
+                    <span class="detail-label">Credit History:</span>
+                    <span class="detail-value">{{ verification_report.verifications.cibil.details.credit_history_months }} months</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if 'income' in verification_report.verifications %}
+    <div class="verification-card">
+        <div class="verification-card-header">
+            <div class="verification-card-title">
+                <i class="fas fa-money-bill-wave"></i>
+                Income Verification
+            </div>
+            <span class="status-badge badge-{{ 'success' if verification_report.verifications.income.verified else 'warning' }}">
+                {{ 'Verified' if verification_report.verifications.income.verified else 'Variance Detected' }}
+            </span>
+        </div>
+        <div class="verification-card-body">
+            <div class="verification-detail">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value">{{ verification_report.verifications.income.message }}</span>
+            </div>
+            {% if verification_report.verifications.income.details %}
+                <div class="verification-detail">
+                    <span class="detail-label">Reported Income:</span>
+                    <span class="detail-value">₹ {{ "{:,.0f}".format(verification_report.verifications.income.details.reported_income) }}</span>
+                </div>
+                <div class="verification-detail">
+                    <span class="detail-label">ITR Income:</span>
+                    <span class="detail-value">₹ {{ "{:,.0f}".format(verification_report.verifications.income.details.itr_income) }}</span>
+                </div>
+                <div class="verification-detail">
+                    <span class="detail-label">Variance:</span>
+                    <span class="detail-value">{{ verification_report.verifications.income.details.variance_percent }}%</span>
+                </div>
+                <div class="verification-detail">
+                    <span class="detail-label">Last ITR Filed:</span>
+                    <span class="detail-value">{{ verification_report.verifications.income.details.last_itr_filed }}</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<div class="action-buttons">
+    <a href="{{ url_for('view_profile') }}" class="btn btn-secondary">
+        <i class="fas fa-user"></i> View Full Profile
+    </a>
+    <form method="POST" action="{{ url_for('rerun_verification') }}" style="display: inline;">
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-sync-alt"></i> Re-run Verification
+        </button>
+    </form>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+        <i class="fas fa-home"></i> Go to Dashboard
+    </a>
+</div>
+
+{% endif %}
+{% endblock %}
