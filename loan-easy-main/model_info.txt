@@ -1,3 +1,0 @@
-Best Model: Random Forest
-Accuracy: 0.9650
-CV Score: 0.9412

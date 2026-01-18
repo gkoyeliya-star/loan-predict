@@ -1,44 +1,58 @@
 """
-Flask web application for Loan Approval Prediction
+Stateless Flask app for Loan Eligibility Prediction
+No authentication, no database, no persistence
+Only real-time ML prediction
 """
 from flask import Flask, render_template, request, jsonify
 import joblib
 import numpy as np
-import pandas as pd
+import os
 
 app = Flask(__name__)
 
-# Load the trained model and encoders
+# Load the trained model and encoders from Models directory
+MODEL_DIR = 'Models'
 try:
-    model = joblib.load('loan_model.pkl')
-    label_encoders = joblib.load('label_encoders.pkl')
-    print("✓ Model and encoders loaded successfully!")
-except:
-    print("⚠ Model not found. Please run train_model.py first.")
+    model_path = os.path.join(MODEL_DIR, 'loan_model_real.pkl')
+    encoders_path = os.path.join(MODEL_DIR, 'label_encoders_real.pkl')
+    features_path = os.path.join(MODEL_DIR, 'feature_names_real.pkl')
+    
+    model = joblib.load(model_path)
+    label_encoders = joblib.load(encoders_path)
+    feature_names = joblib.load(features_path)
+    
+    print("✅ Model loaded successfully!")
+    print(f"   Model type: {type(model).__name__}")
+    print(f"   Features: {len(feature_names)}")
+except Exception as e:
+    print(f"⚠️  Warning: Could not load model: {e}")
+    print("   Please run 'python train_new_model.py' first")
     model = None
     label_encoders = None
+    feature_names = None
 
 @app.route('/')
 def home():
-    """Render the home page"""
+    """Render the home page with loan eligibility form"""
     return render_template('index.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    """Handle prediction requests"""
+    """Handle prediction requests - stateless, no persistence"""
     if model is None:
         return jsonify({
-            'error': 'Model not loaded. Please train the model first.'
+            'error': 'Model not loaded. Please train the model first.',
+            'status': 'error'
         }), 500
     
     try:
         # Get form data
         data = request.form
         
-        # Create feature dictionary
+        # Create feature dictionary in the correct order
         features = {
             'ApplicantIncome': float(data['applicant_income']),
-            'CoapplicantIncome': float(data['coapplicant_income']),
+            'CoapplicantIncome': float(data.get('coapplicant_income', 0)),
             'LoanAmount': float(data['loan_amount']),
             'Loan_Amount_Term': float(data['loan_term']),
             'Credit_History': float(data['credit_history']),
@@ -58,24 +72,25 @@ def predict():
             if col in label_encoders:
                 try:
                     features[col] = label_encoders[col].transform([features[col]])[0]
-                except:
-                    features[col] = 0  # Default value if encoding fails
+                except ValueError:
+                    # Handle unknown category - use first class as default
+                    features[col] = 0
         
         # Create feature array in correct order
-        feature_order = ['ApplicantIncome', 'CoapplicantIncome', 'LoanAmount', 
-                        'Loan_Amount_Term', 'Credit_History', 'Gender', 'Married', 
-                        'Dependents', 'Education', 'Self_Employed', 'Property_Area']
-        
-        feature_array = np.array([[features[col] for col in feature_order]])
+        feature_array = np.array([[features[name] for name in feature_names]])
         
         # Make prediction
         prediction = model.predict(feature_array)[0]
         probability = model.predict_proba(feature_array)[0]
         
+        # Calculate confidence (probability of predicted class)
+        confidence = probability[1] if prediction == 1 else probability[0]
+        confidence = float(confidence) * 100
+        
         # Prepare response
         result = {
             'prediction': 'Approved' if prediction == 1 else 'Not Approved',
-            'probability': float(probability[1]) * 100,  # Probability of approval
+            'confidence': round(confidence, 2),
             'status': 'success'
         }
         
@@ -87,21 +102,28 @@ def predict():
             'status': 'error'
         }), 400
 
-@app.route('/about')
-def about():
-    """Render the about page"""
-    return render_template('about.html')
+@app.route('/health')
+def health():
+    """Health check endpoint for monitoring"""
+    return jsonify({
+        'status': 'healthy',
+        'model_loaded': model is not None
+    })
 
 if __name__ == '__main__':
+    import os
     print("\n" + "="*60)
-    print("LOAN APPROVAL PREDICTION WEB APP")
+    print("🏦 LOAN ELIGIBILITY CHECKER")
     print("="*60)
     if model is None:
-        print("\n⚠ WARNING: Model not loaded!")
-        print("Please run the following commands first:")
-        print("  1. python generate_data.py")
-        print("  2. python train_model.py")
+        print("\n⚠️  WARNING: Model not loaded!")
+        print("Please run: python train_new_model.py")
+    else:
+        print("\n✅ Model loaded and ready")
     print("\nStarting Flask server...")
-    print("Open your browser and go to: http://127.0.0.1:5000")
+    print("Open your browser: http://127.0.0.1:5000")
     print("="*60 + "\n")
-    app.run(debug=True)
+    
+    # Only enable debug mode in development
+    debug_mode = os.environ.get('FLASK_ENV') != 'production'
+    app.run(debug=debug_mode, host='0.0.0.0', port=5000)
