@@ -75,13 +75,13 @@ Open your browser and go to: **http://127.0.0.1:5000**
 
 ## 🌐 Live Demo
 
-**Deployed on Vercel:** [https://loan-easy.vercel.app](https://loan-easy.vercel.app) *(Replace with your URL)*
+**Deployed on Render:** [https://loan-easy.onrender.com](https://loan-easy.onrender.com) *(Replace with your URL)*
 
 ---
 
 ## 📖 Complete Documentation
 
-- **[Deployment Guide](DEPLOYMENT_GUIDE.md)** - GitHub & Vercel deployment steps
+- **[Render Deployment Guide](RENDER_DEPLOYMENT_GUIDE.md)** - GitHub & Render deployment steps
 - **[Verification System](VERIFICATION_SYSTEM_DOCS.md)** - Document verification details
 - **[Authentication System](AUTHENTICATION_SYSTEM_COMPLETE.md)** - User management guide
 - **[Model Explanation](REAL_MODEL_SUCCESS.md)** - ML model training and performance
@@ -147,7 +147,7 @@ loan-easy/
 ├── verification_service.py             # Document verification module
 ├── train_model_real.py                 # ML model training (real data)
 ├── requirements.txt                    # Python dependencies
-├── vercel.json                         # Vercel deployment config
+├── render.yaml                         # Render deployment config
 ├── wsgi.py                             # WSGI entry point
 ├── runtime.txt                         # Python version
 ├── .gitignore                          # Git ignore rules
@@ -179,7 +179,7 @@ loan-easy/
 │
 └── Documentation/
     ├── README.md                       # This file
-    ├── DEPLOYMENT_GUIDE.md             # GitHub & Vercel deployment
+    ├── RENDER_DEPLOYMENT_GUIDE.md      # GitHub & Render deployment
     ├── VERIFICATION_SYSTEM_DOCS.md     # Verification system details
     ├── AUTHENTICATION_SYSTEM_COMPLETE.md  # Auth system guide
     └── REAL_MODEL_SUCCESS.md           # ML model documentation
@@ -250,7 +250,7 @@ pip install --upgrade -r requirements.txt
 
 ## � Deployment
 
-### Deploy to Vercel (Recommended)
+### Deploy to Render
 
 1. **Push to GitHub:**
    ```powershell
@@ -261,14 +261,17 @@ pip install --upgrade -r requirements.txt
    git push -u origin main
    ```
 
-2. **Deploy to Vercel:**
-   - Go to [vercel.com](https://vercel.com)
-   - Click "Import Project"
-   - Select your GitHub repository
-   - Click "Deploy"
-   - Done! 🎉
+2. **Deploy to Render:**
+   - Go to [Render Dashboard](https://dashboard.render.com)
+   - Create a new **Web Service** from your GitHub repository
+   - **Build Command:** `pip install -r requirements.txt`
+   - **Start Command:** `gunicorn wsgi:app`
+   - **Environment Variables:** `SECRET_KEY`, `FLASK_ENV=production`
+   - Click **Create Web Service**
 
-**Full deployment guide:** See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)
+**Full deployment guide:** See [RENDER_DEPLOYMENT_GUIDE.md](RENDER_DEPLOYMENT_GUIDE.md)
+
+> **Note:** Render's free tier will cold start after inactivity, so the first request may take a few seconds.
 
 ---
 
@@ -298,7 +301,7 @@ The system will verify all documents and show detailed results!
 | **Machine Learning** | scikit-learn, Gradient Boosting |
 | **Frontend** | HTML5, CSS3, JavaScript |
 | **Icons** | FontAwesome 6.4 |
-| **Deployment** | Vercel, GitHub |
+| **Deployment** | Render, GitHub |
 
 ---
 

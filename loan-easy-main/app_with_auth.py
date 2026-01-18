@@ -6,10 +6,11 @@ from datetime import datetime
 import joblib
 import numpy as np
 import os
+import secrets
 
 # Initialize Flask app
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key-change-this-in-production'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or secrets.token_urlsafe(32)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///loaneasy.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
