@@ -111,6 +111,7 @@ def health():
     })
 
 if __name__ == '__main__':
+    import os
     print("\n" + "="*60)
     print("🏦 LOAN ELIGIBILITY CHECKER")
     print("="*60)
@@ -122,4 +123,7 @@ if __name__ == '__main__':
     print("\nStarting Flask server...")
     print("Open your browser: http://127.0.0.1:5000")
     print("="*60 + "\n")
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    
+    # Only enable debug mode in development
+    debug_mode = os.environ.get('FLASK_ENV') != 'production'
+    app.run(debug=debug_mode, host='0.0.0.0', port=5000)
