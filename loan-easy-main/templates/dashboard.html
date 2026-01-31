@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Eligibility System - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: radial-gradient(ellipse at 50% 50%, rgba(0, 30, 20, 0.95) 0%, rgba(0, 10, 10, 1) 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            color: #e0e0e0;
+        }
+
+        /* Starfield Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 60px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 50px 50px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 130px 80px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90px 10px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            animation: twinkle 5s ease-in-out infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* Floating Background Icons */
+        .floating-icons {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .floating-icon {
+            position: absolute;
+            opacity: 0.08;
+            animation: float linear infinite;
+            font-size: 2rem;
+            color: #00ff88;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: rgba(10, 20, 15, 0.6);
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.2), inset 0 0 20px rgba(0, 255, 136, 0.05);
+            backdrop-filter: blur(10px);
+            animation: slideDown 0.8s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: #00ff88;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5), 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .header p {
+            color: #a0e0c0;
+            font-size: 1.2rem;
+            text-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
+        }
+
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 700px));
+            gap: 2rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        /* Card Styles */
+        .card {
+            background: rgba(10, 20, 15, 0.5);
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.15), inset 0 0 15px rgba(0, 255, 136, 0.03);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease both;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .dashboard-grid .card:nth-child(1) { animation-delay: 0.1s; }
+        .dashboard-grid .card:nth-child(2) { animation-delay: 0.2s; }
+        .dashboard-grid .card:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .card:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: rgba(0, 255, 136, 0.6);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3), inset 0 0 20px rgba(0, 255, 136, 0.08);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            color: #00ff88;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: #00ff88;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
+        }
+
+        .card-description {
+            color: #a0e0c0;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .card-button {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: rgba(0, 255, 136, 0.1);
+            border: 2px solid #00ff88;
+            border-radius: 8px;
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+            text-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
+        }
+
+        .card-button:hover {
+            background: rgba(0, 255, 136, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+
+        .card-button.disabled {
+            opacity: 0.7;
+            pointer-events: none;
+            filter: grayscale(22%);
+            background: rgba(0,0,0,0.15);
+            border-color: rgba(0,255,136,0.12);
+            color: rgba(160,224,192,0.6);
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: rgba(10, 20, 15, 0.5);
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.15);
+            backdrop-filter: blur(10px);
+            margin-bottom: 2rem;
+        }
+
+        .stats-title {
+            font-size: 1.5rem;
+            color: #00ff88;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(0, 50, 40, 0.5);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.1);
+            animation: scaleUp 0.6s ease both;
+        }
+
+        .stats-grid .stat-box:nth-child(1) { animation-delay: 0.1s; }
+        .stats-grid .stat-box:nth-child(2) { animation-delay: 0.2s; }
+        .stats-grid .stat-box:nth-child(3) { animation-delay: 0.3s; }
+        .stats-grid .stat-box:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes scaleUp {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .stat-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+            border-color: rgba(0, 255, 136, 0.5);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            color: #00ff88;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
+        }
+
+        .stat-label {
+            color: #a0e0c0;
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Features Section */
+        .features-section {
+            background: rgba(10, 20, 15, 0.5);
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.15);
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 0.8s ease;
+        }
+
+        /* About Section */
+        .about-section {
+            background: rgba(10, 20, 15, 0.5);
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.15);
+            backdrop-filter: blur(10px);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease 0.3s both;
+        }
+
+        .about-header {
+            margin-bottom: 2rem;
+        }
+
+        .about-header h2 {
+            font-size: 1.8rem;
+            color: #00ff88;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .about-card {
+            background: rgba(0, 50, 40, 0.3);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.1);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease both;
+        }
+
+        .about-section .about-card:nth-child(1) { animation-delay: 0.4s; }
+        .about-section .about-card:nth-child(2) { animation-delay: 0.5s; }
+        .about-section .about-card:nth-child(3) { animation-delay: 0.6s; }
+        .about-section .about-card:nth-child(4) { animation-delay: 0.7s; }
+
+        .about-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(0, 255, 136, 0.5);
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.3);
+        }
+
+        .about-icon {
+            font-size: 2.5rem;
+            color: #00ff88;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        .about-card h3 {
+            color: #00ff88;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            text-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
+        }
+
+        .about-card p {
+            color: #a0e0c0;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .features-title {
+            font-size: 1.5rem;
+            color: #00ff88;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-item {
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(0, 255, 136, 0.1);
+            color: #a0e0c0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: slideInLeft 0.5s ease both;
+        }
+
+        .feature-list .feature-item:nth-child(1) { animation-delay: 0.1s; }
+        .feature-list .feature-item:nth-child(2) { animation-delay: 0.2s; }
+        .feature-list .feature-item:nth-child(3) { animation-delay: 0.3s; }
+        .feature-list .feature-item:nth-child(4) { animation-delay: 0.4s; }
+        .feature-list .feature-item:nth-child(5) { animation-delay: 0.5s; }
+        .feature-list .feature-item:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+
+        .feature-item i {
+            color: #00ff88;
+            font-size: 1.2rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #a0e0c0;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(0, 255, 136, 0.1);
+        }
+
+        .footer p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+            text-shadow: 0 0 5px rgba(0, 255, 136, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .card-icon {
+                font-size: 2rem;
+            }
+
+            .card-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div id="splash" class="splash-overlay" aria-hidden="false">
+        <div class="splash-icon" role="img" aria-label="FinFlow bank logo">🏦</div>
+    </div>
+
+    <!-- Floating Background Icons -->
+    <div class="floating-icons" id="floatingIcons"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-chart-line"></i> Loan Management Dashboard</h1>
+            <p>AI-Powered Loan Eligibility & Management System</p>
+        </div>
+
+        <!-- Main Dashboard Cards -->
+        <div class="dashboard-grid">
+            <!-- Check Eligibility Card (centered) -->
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="card-title">Check Eligibility</div>
+                <p class="card-description">
+                    Instantly check if you qualify for a loan with our advanced AI-powered prediction system. Get real-time approval estimates.
+                </p>
+                <a href="/checker" class="card-button">
+                    <i class="fas fa-arrow-right"></i> Start Checking
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-section">
+            <div class="stats-title"><i class="fas fa-bar-chart"></i> System Statistics</div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-number">15,234</div>
+                    <div class="stat-label">Total Applications</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">92.5%</div>
+                    <div class="stat-label">Approval Rate</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">$2.5B</div>
+                    <div class="stat-label">Total Loans Approved</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">4.2s</div>
+                    <div class="stat-label">Avg. Decision Time</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <div class="about-section">
+            <div class="about-header">
+                <h2><i class="fas fa-info-circle"></i> About This Project</h2>
+            </div>
+            <div class="about-grid">
+                <div class="about-card">
+                    <div class="about-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h3>Our Mission</h3>
+                    <p>
+                        To revolutionize loan approval processes by leveraging artificial intelligence to provide fast, accurate, and fair loan eligibility predictions. We believe in empowering individuals and businesses with instant access to financial insights.
+                    </p>
+                </div>
+                <div class="about-card">
+                    <div class="about-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3>Technology</h3>
+                    <p>
+                        Built with cutting-edge machine learning technology using Python, Flask, and Scikit-learn. Our Gradient Boosting Classifier model achieves 94% accuracy on real-world loan data.
+                    </p>
+                </div>
+                <div class="about-card">
+                    <div class="about-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Security & Privacy</h3>
+                    <p>
+                        Your data is processed securely and never stored. We ensure complete privacy with stateless architecture and encryption protocols for all transactions.
+                    </p>
+                </div>
+                <div class="about-card">
+                    <div class="about-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3>Global Reach</h3>
+                    <p>
+                        Accessible from anywhere, anytime. Our cloud-based system serves users worldwide with consistent performance and reliability.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features-section">
+            <div class="features-title"><i class="fas fa-star"></i> Key Features</div>
+            <ul class="feature-list">
+                <li class="feature-item">
+                    <i class="fas fa-brain"></i>
+                    <span><strong>Advanced AI Model</strong> - Gradient Boosting machine learning for accurate predictions</span>
+                </li>
+                <li class="feature-item">
+                    <i class="fas fa-bolt"></i>
+                    <span><strong>Instant Results</strong> - Get approval predictions in seconds, not days</span>
+                </li>
+                <li class="feature-item">
+                    <i class="fas fa-lock"></i>
+                    <span><strong>Secure & Private</strong> - Your data is encrypted and never stored on our servers</span>
+                </li>
+                <li class="feature-item">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span><strong>Mobile Friendly</strong> - Access from any device, anywhere, anytime</span>
+                </li>
+                <li class="feature-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span><strong>Detailed Analytics</strong> - Get comprehensive insights about your loan eligibility</span>
+                </li>
+                <li class="feature-item">
+                    <i class="fas fa-headset"></i>
+                    <span><strong>24/7 Support</strong> - Expert assistance available round the clock</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><i class="fas fa-shield-alt"></i> Secure • Reliable • Fast</p>
+            <p style="font-size: 0.85rem; margin-top: 0.5rem;">© 2026 Loan Eligibility Checker. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script>
+        // Create floating icons
+        const icons = ['fa-dollar-sign', 'fa-coins', 'fa-money-bill-wave', 'fa-building-columns', 'fa-landmark', 'fa-credit-card', 'fa-piggy-bank', 'fa-chart-line', 'fa-hand-holding-dollar', 'fa-wallet'];
+        const floatingContainer = document.getElementById('floatingIcons');
+
+        function createFloatingIcon() {
+            const icon = document.createElement('i');
+            icon.className = `fas ${icons[Math.floor(Math.random() * icons.length)]} floating-icon`;
+            icon.style.left = Math.random() * 100 + '%';
+            icon.style.fontSize = (Math.random() * 2 + 1.5) + 'rem';
+            icon.style.animationDuration = (Math.random() * 10 + 15) + 's';
+            icon.style.animationDelay = Math.random() * 5 + 's';
+            floatingContainer.appendChild(icon);
+
+            // Remove after animation completes
+            setTimeout(() => {
+                icon.remove();
+            }, (parseFloat(icon.style.animationDuration) + parseFloat(icon.style.animationDelay)) * 1000);
+        }
+
+        // Create initial batch of icons
+        for (let i = 0; i < 20; i++) {
+            createFloatingIcon();
+        }
+
+        // Continuously create new icons
+        setInterval(createFloatingIcon, 2000);
+    </script>
+</body>
+</html>

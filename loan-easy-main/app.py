@@ -33,7 +33,22 @@ except Exception as e:
 
 @app.route('/')
 def home():
-    """Render the home page with loan eligibility form"""
+    """Render the dashboard"""
+    return render_template('dashboard.html')
+
+@app.route('/futuristic')
+def futuristic():
+    """Render the futuristic fintech dashboard"""
+    return render_template('futuristic_dashboard.html')
+
+@app.route('/futuristic-v2')
+def futuristic_v2():
+    """Render the new futuristic dashboard with swipe navigation"""
+    return render_template('futuristic_dashboard_v2.html')
+
+@app.route('/checker')
+def checker():
+    """Render the loan eligibility checker form"""
     return render_template('index.html')
 
 @app.route('/predict', methods=['POST'])
